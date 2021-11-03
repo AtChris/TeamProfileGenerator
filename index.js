@@ -2,9 +2,12 @@ const Manager = require("./lib/Manager");
 // import other classes (engineer etc)
 const Engineer = require("./lib/Engineer");
 const Intern = require("./lib/Intern");
+const htmlgenerator = require("./htmlgenerator.js")
 const inquirer = require("inquirer");
 const fs = require("fs");
-const regex = /^[a-zA-Z]+$/;
+const returnedanswers = [];
+
+
 
 menu = () => {
   return inquirer
@@ -36,6 +39,7 @@ menu = () => {
     .then(({ name, id, email, officeNumber }) => {
       const manager = new Manager(name, id, email, officeNumber);
       console.log(manager);
+      returnedanswers.push(manager);
     });
 };
 
@@ -50,6 +54,12 @@ internSelection = () => {
 
       {
         type: "input",
+        name: "id",
+        message: "What is the intern's ID?",
+      },
+
+      {
+        type: "input",
         name: "school",
         message: "What school does the intern go to?",
       },
@@ -60,9 +70,11 @@ internSelection = () => {
         message: "What is the intern's email?",
       },
     ])
-    .then(({ name, school, email }) => {
-      const intern = new Intern(name, school, email);
+    .then(({ name, id, school, email }) => {
+      const intern = new Intern(name, id, school, email);
       console.log(intern);
+      returnedanswers.push(intern);
+      employeeQuestion();
     });
 };
 
@@ -77,22 +89,37 @@ engineerSelection = () => {
 
       {
         type: "input",
-        name: "school",
-        message: "What school does the intern go to?",
+        name: "id",
+        message: "What is the engineer's ID?",
       },
 
       {
         type: "input",
         name: "email",
-        message: "What is the intern's email?",
+        message: "What is the engineer's email?",
       },
+
+      {
+        type: "input",
+        name: "github",
+        message: "What is the engineer's Github username?",
+      },
+
+     
     ])
-    .then(({ name, school, email }) => {
-      const intern = new Intern(name, school, email);
-      console.log(intern);
+    .then(({ name, id, email, github }) => {
+      const engineer = new Engineer(name, id, email, github);
+      console.log(engineer);
+      returnedanswers.push(intern);
+      employeeQuestion();
     });
 };
-
+generatefile = (returnedanswers) => {
+  const create = htmlgenerator(returnedanswers);
+  fs.writeFile('index.html', create, err => {
+    if(err) {
+        throw err;
+}
 
 employeeQuestion = () => {
   return inquirer
@@ -115,7 +142,11 @@ employeeQuestion = () => {
       } else if (answer.questionPrompt == "Engineer") {
 engineerSelection();
       }
-    });
+      else {
+        generatefile(returnedanswers)
+      }
+    );
+    }
 };
 
 (async () => {
