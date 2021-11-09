@@ -2,12 +2,10 @@ const Manager = require("./lib/Manager");
 // import other classes (engineer etc)
 const Engineer = require("./lib/Engineer");
 const Intern = require("./lib/Intern");
-const htmlgenerator = require("./htmlgenerator.js")
+const htmlgenerator = require("./htmlgenerator.js");
 const inquirer = require("inquirer");
 const fs = require("fs");
 const returnedanswers = [];
-
-
 
 menu = () => {
   return inquirer
@@ -104,22 +102,22 @@ engineerSelection = () => {
         name: "github",
         message: "What is the engineer's Github username?",
       },
-
-     
     ])
     .then(({ name, id, email, github }) => {
       const engineer = new Engineer(name, id, email, github);
       console.log(engineer);
-      returnedanswers.push(intern);
+      returnedanswers.push(engineer);
       employeeQuestion();
     });
 };
 generatefile = (returnedanswers) => {
   const create = htmlgenerator(returnedanswers);
-  fs.writeFile('index.html', create, err => {
-    if(err) {
-        throw err;
-}
+  fs.writeFile("index.html", create, (err) => {
+    if (err) {
+      throw err;
+    }
+  });
+};
 
 employeeQuestion = () => {
   return inquirer
@@ -140,13 +138,11 @@ employeeQuestion = () => {
       if (answer.questionPrompt == "Intern") {
         internSelection();
       } else if (answer.questionPrompt == "Engineer") {
-engineerSelection();
+        engineerSelection();
+      } else {
+        generatefile(returnedanswers);
       }
-      else {
-        generatefile(returnedanswers)
-      }
-    );
-    }
+    });
 };
 
 (async () => {
